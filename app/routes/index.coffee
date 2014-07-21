@@ -106,7 +106,10 @@ generatePayment = (payment, dataPath, req, res) ->
   makeRequest dataPath, headers, (err, results) ->
     if err?
       console.log "generatePayment FAILED", dataPath, err
-      res.send 400, 'Bad request'
+      if err.indexOf("API responded with 403") > -1
+        res.send 403, 'Session has expired, log in again.'
+      else
+        res.send 400, 'Bad request'
     else
       payment.data = results.data
       payment.output (result) ->
@@ -118,16 +121,20 @@ generateReport = (report, dataPath, req, res) ->
   envPath   = getReportUrl "env.json?#{parsedURL.query}"
   headers   = cookie: req.headers.cookie, authorization: req.headers.authorization
   params    = querystring.parse parsedURL.query
-  dataPath  = dataPath + "?view=print&string_title=true&#{parsedURL.query}"
+  dataPath  = dataPath + "?view=print&string_title=true&bars_count=31&#{parsedURL.query}"
 
   if params.bookmark_token
     envPath = getReportUrl "bookmark/#{params.bookmark_token}"
 
   makePdf = (err, results) ->
     if err?
-      res.writeHead 400, 'Content-Type': 'text/plain'
       console.log 'generateReport FAILED', err, results
-      res.end 'Bad request'
+      if err.indexOf("API responded with 403") > -1
+        res.writeHead 403, 'Content-Type': 'text/plain'
+        res.end 'Session has expired, log in again.'
+      else
+        res.writeHead 400, 'Content-Type': 'text/plain'
+        res.end 'Bad request'
     else
       report.data = results.data
       report.data.params = params
