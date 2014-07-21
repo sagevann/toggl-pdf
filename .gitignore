@@ -1,0 +1,4 @@
+*.pdf
+dist
+config
+node_modules
