@@ -15,6 +15,7 @@ The following tools must be installed prior to running the NPM install command:
 * Install dependencies with `npm install`
 
 > Attempting to `npm install` without coffee-script causes a packaging error 
+
 > To resolve, simply follow the steps on  [http://coffeescript.org/](http://coffeescript.org/) 
 
 ## PDF generation
